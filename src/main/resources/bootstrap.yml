@@ -1,0 +1,74 @@
+## 服务器地址配置
+server-addr:
+  spring:
+    cloud:
+      alibaba: 47.97.23.125
+      proto: 127.0.0.1
+## spring服务配置
+spring:
+  application:
+    name: demo-na
+  cloud:
+    ## 配置中心
+    #    config:
+    #      ## 配置中心地址
+    #      uri: http://${server-addr.spring.cloud.proto}:7001
+    #      discovery:
+    #        ## 开启配置发现（通过注册中心获取配置中心服务的负载地址列表）
+    #        enabled: false
+    #      ## 快速失败响应
+    #      fail-fast: true
+    #      ## 资源后缀名
+    #      profile: test
+    #      ## 代码分支名称
+    #      label: master
+    nacos:
+      config:
+        ## 配置环境地址
+        server-addr: ${server-addr.spring.cloud.alibaba}:8848
+        ## 引用后缀（在nacos后缀的命名 applicationname + - +spring-profiles-active.yaml）
+        ## 如产品服务 cloud-product-dev.yaml 其中dev对应配置变量spring.profiles.active 中的值
+        ## 如缺失，默认为cloud-product.yaml
+        file-extension: yaml
+        ## 是否开启nacos 配置中心（默认开启）
+        enabled: true
+        prefix: ${spring.application.name}-${spring.profiles.active}
+        ## 助力钱包测试环境
+        namespace: 230e1d2f-bdb8-4b3b-b2af-4931cfa42f23
+        # Data Id 不在默认的组，不支持动态刷新(默认情况支持动态刷新，因为jasypt加密问题，动态刷新会导致获取属性异常,可参数源码：NacosPropertySourceLocator)
+        extension-configs:
+                    ## 数据库配置
+          - data-id: jdbc.yaml
+                    ## redis 配置
+          - data-id: redis.yaml
+                    ## Mongodb 配置
+          - data-id: mongodb.yaml
+                    ## OSS 配置
+          - data-id: oss.yaml
+                    ## 公共文件
+          - data-id: common.yaml
+  profiles:
+    active: test
+
+
+## 服务端口，优先取配置中心
+server:
+  port: 8773
+  undertow:
+    threads:
+      io: 16
+      worker: 256
+    accesslog:
+      enabled: false
+      rotate: true
+
+
+testzxp: 123
+
+## jasypt 加密
+jasypt:
+  encryptor:
+    ##
+    password: zlqb~
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
